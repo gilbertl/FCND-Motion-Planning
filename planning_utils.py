@@ -55,6 +55,10 @@ class Action(Enum):
     EAST = (0, 1, 1)
     NORTH = (-1, 0, 1)
     SOUTH = (1, 0, 1)
+    NORTH_WEST = (-1, -1, 1.414)
+    NORTH_EAST = (-1, 1, 1.414)
+    SOUTH_WEST = (1, -1, 1.414)
+    SOUTH_EAST = (1, 1, 1.414)
 
     @property
     def cost(self):
@@ -69,7 +73,7 @@ def valid_actions(grid, current_node):
     """
     Returns a list of valid actions given a grid and current node.
     """
-    valid_actions = list(Action)
+    valid_actions = set(Action)
     n, m = grid.shape[0] - 1, grid.shape[1] - 1
     x, y = current_node
 
@@ -77,15 +81,23 @@ def valid_actions(grid, current_node):
     # it's an obstacle
 
     if x - 1 < 0 or grid[x - 1, y] == 1:
-        valid_actions.remove(Action.NORTH)
+        valid_actions.discard(Action.NORTH)
+        valid_actions.discard(Action.NORTH_WEST)
+        valid_actions.discard(Action.NORTH_EAST)
     if x + 1 > n or grid[x + 1, y] == 1:
-        valid_actions.remove(Action.SOUTH)
+        valid_actions.discard(Action.SOUTH)
+        valid_actions.discard(Action.SOUTH_EAST)
+        valid_actions.discard(Action.SOUTH_WEST)
     if y - 1 < 0 or grid[x, y - 1] == 1:
-        valid_actions.remove(Action.WEST)
+        valid_actions.discard(Action.WEST)
+        valid_actions.discard(Action.NORTH_WEST)
+        valid_actions.discard(Action.SOUTH_WEST)
     if y + 1 > m or grid[x, y + 1] == 1:
-        valid_actions.remove(Action.EAST)
+        valid_actions.discard(Action.EAST)
+        valid_actions.discard(Action.NORTH_EAST)
+        valid_actions.discard(Action.SOUTH_EAST)
 
-    return valid_actions
+    return list(valid_actions)
 
 
 def a_star(grid, h, start, goal):
